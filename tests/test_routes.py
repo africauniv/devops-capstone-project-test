@@ -123,4 +123,22 @@ class TestAccountService(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
-    # ADD YOUR TEST CASES HERE ...
+
+    ######################################################################
+    #  A C C O U N T   T E S T   C A S E S S U P P L E M E N T S
+    ######################################################################
+
+    def test_read_account(self):
+        """it should return an element by its id """
+        ac = AccountFactory()
+        ac.create()
+        ac_result = Account.find_by_name(ac.name)[0]
+        response = self.client.get(f"{BASE_URL}/{ac_result.id}")
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        ac_final = response.get_json()
+        self.assertEqual(ac_final["name"],ac.serialize()["name"])
+        self.assertEqual(ac_final["email"],ac.serialize()["email"])
+        self.assertEqual(ac_final["address"],ac.serialize()["address"])
+        self.assertEqual(ac_final["phone_number"],ac.serialize()["phone_number"])
+
+

@@ -8,6 +8,7 @@ from flask import jsonify, request, make_response, abort, url_for   # noqa; F401
 from service.models import Account
 from service.common import status  # HTTP Status Codes
 from . import app  # Import Flask application
+import datetime
 
 
 ############################################################
@@ -68,7 +69,22 @@ def create_accounts():
 # READ AN ACCOUNT
 ######################################################################
 
-# ... place you code here to READ an account ...
+@app.route("/accounts/<int:id>", methods=["GET"])
+def read_accounts(id):
+    """
+    Retrieve an account by its ID.
+    """
+    timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    app.logger.info(f"{timestamp} GET Request to create an Account")
+    account = Account.find(id)
+    if(account.id):
+        return (
+            jsonify(account.serialize()), status.HTTP_200_OK, 
+        )        
+    else:
+        return (jsonify({'error': 'Account not found'}), status.HTTP_404_NOT_FOUND)
+    
+
 
 
 ######################################################################
