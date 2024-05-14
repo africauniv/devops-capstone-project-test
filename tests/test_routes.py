@@ -140,5 +140,32 @@ class TestAccountService(TestCase):
         self.assertEqual(ac_final["email"],ac.serialize()["email"])
         self.assertEqual(ac_final["address"],ac.serialize()["address"])
         self.assertEqual(ac_final["phone_number"],ac.serialize()["phone_number"])
+    
+    def test_read_not_found(self):
+        """it should return an error not found type"""
+        response = self.client.get(f"{BASE_URL}/20")
+        self.assertEqual(response.status_code,status.HTTP_404_NOT_FOUND)
+        ac_final = response.get_json()
+        self.assertEqual("account not found",ac_final["error"])
 
+    def test_read_list_accounts(self):
+        """it should return accounts list"""
+        ac_initials = list()
+        for _ in range(3):
+            a = AccountFactory()
+            a.create()
+            ac_initials.append(a)
+        response = self.client.get(BASE_URL)
+        ac_finals = response.get_json()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(ac_initials), len(ac_finals))
+        for i in range(3):
+            result = any(ac_finals[i] == item.serialize()  for item in ac_initials)
+            self.assertTrue(result)
 
+    def test_read_list_not_found(self):
+        """it should return an error not found type for list check"""
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code,status.HTTP_404_NOT_FOUND)
+        ac_final = response.get_json()
+        self.assertEqual("accounts not found",ac_final["error"])

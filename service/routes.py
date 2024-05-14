@@ -62,7 +62,21 @@ def create_accounts():
 # LIST ALL ACCOUNTS
 ######################################################################
 
-# ... place you code here to LIST accounts ...
+@app.route("/accounts", methods=["GET"])
+def read_accounts():
+    """
+    Retrieve all accounts
+    """
+    timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    app.logger.info(f"{timestamp} GET Request to retrieve all Accounts")
+    accounts = Account.all()
+    if(accounts):
+        accounts_json = [item.serialize() for item in accounts]
+        return (
+            jsonify(accounts_json), status.HTTP_200_OK, 
+        )        
+    else:
+        return (jsonify({'error': 'accounts not found'}), status.HTTP_404_NOT_FOUND)
 
 
 ######################################################################
@@ -70,19 +84,19 @@ def create_accounts():
 ######################################################################
 
 @app.route("/accounts/<int:id>", methods=["GET"])
-def read_accounts(id):
+def read_account(id):
     """
     Retrieve an account by its ID.
     """
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    app.logger.info(f"{timestamp} GET Request to create an Account")
+    app.logger.info(f"{timestamp} GET Request to retrieve an Account")
     account = Account.find(id)
-    if(account.id):
+    if(account):
         return (
             jsonify(account.serialize()), status.HTTP_200_OK, 
         )        
     else:
-        return (jsonify({'error': 'Account not found'}), status.HTTP_404_NOT_FOUND)
+        return (jsonify({'error': 'account not found'}), status.HTTP_404_NOT_FOUND)
     
 
 
