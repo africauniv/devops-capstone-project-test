@@ -7,6 +7,7 @@ Test cases can be run with the following:
 """
 import os
 import logging
+import json
 from unittest import TestCase
 from tests.factories import AccountFactory
 from service.common import status  # HTTP Status Codes
@@ -169,3 +170,33 @@ class TestAccountService(TestCase):
         self.assertEqual(response.status_code,status.HTTP_404_NOT_FOUND)
         ac_final = response.get_json()
         self.assertEqual("accounts not found",ac_final["error"])
+
+    def test_update_account(self):
+        """it should change value and return 200_OK"""
+        ac = AccountFactory()
+        ac.create()
+        ac_id = Account.find_by_name(ac.name)[0].id
+        ac.name = "benjamin"
+        ac.email = "benjamin@gmail.com"
+        response = self.client.put(f"{BASE_URL}/{ac_id}", json=ac.serialize())
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        #check the item from database and verify modifications
+        ac_result = Account.find(ac_id)
+        self.assertEqual("benjamin", ac_result.name)
+        self.assertEqual("benjamin@gmail.com", ac_result.email)
+
+    def test_update_fail(self):
+        """it should try to change empty or unauthaurized attribut value Or either invalid id"""
+        response = self.client.put(f"{BASE_URL}/0", json = {})
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+        ac = AccountFactory()
+        response = self.client.put(f"{BASE_URL}/22", json = json.dumps(ac.serialize()))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        ac = AccountFactory()
+        ac.create()
+        ac_id = Account.find_by_name(ac.name)[0].id
+        json_fail = '{"city":"goda"}'
+        response = self.client.put(f"{BASE_URL}/{ac_id}", json = json_fail)
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)

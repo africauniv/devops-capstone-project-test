@@ -105,7 +105,30 @@ def read_account(id):
 # UPDATE AN EXISTING ACCOUNT
 ######################################################################
 
-# ... place you code here to UPDATE an account ...
+@app.route("/accounts/<int:id>", methods=["PUT"])
+def update_account(id):
+    """
+    update an account by its ID.
+    """
+    timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    app.logger.info(f"{timestamp} GET Request to update an Account")
+    if not request.get_json():
+        return (jsonify({'error': 'id not found'}), status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    ac = Account.find(id)
+    if not ac:
+        return (jsonify({'error': 'id not found'}), status.HTTP_404_NOT_FOUND)
+
+    try:
+        ac.deserialize(request.get_json())
+    except:
+        return (jsonify({'error': 'attribute error'}), status.HTTP_409_CONFLICT)
+
+    ac.update()
+
+    return (
+        jsonify(ac.serialize()), status.HTTP_200_OK, 
+    )        
 
 
 ######################################################################
