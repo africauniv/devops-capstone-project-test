@@ -200,3 +200,18 @@ class TestAccountService(TestCase):
         json_fail = '{"city":"goda"}'
         response = self.client.put(f"{BASE_URL}/{ac_id}", json = json_fail)
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+
+    def test_delete_account(self):
+        """it should delete an account by id"""
+        ac = AccountFactory()
+        ac.create()
+        ac_id = Account.find_by_name(ac.name)[0].id
+        response = self.client.delete(f"{BASE_URL}/{ac_id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        #check the item from database and verify empty result
+        self.assertIsNone(Account.find(ac_id))
+    
+    def test_delete_fail(self):
+        """it should try to delete by false id"""
+        response = self.client.delete(f"{BASE_URL}/22")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

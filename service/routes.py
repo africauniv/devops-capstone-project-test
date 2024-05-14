@@ -108,7 +108,7 @@ def read_account(id):
 @app.route("/accounts/<int:id>", methods=["PUT"])
 def update_account(id):
     """
-    update an account by its ID.
+    update an account by it ID.
     """
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     app.logger.info(f"{timestamp} GET Request to update an Account")
@@ -135,7 +135,24 @@ def update_account(id):
 # DELETE AN ACCOUNT
 ######################################################################
 
-# ... place you code here to DELETE an account ...
+@app.route("/accounts/<int:id>", methods=["DELETE"])
+def delete_account(id):
+    """
+    delete an account by it ID.
+    """
+    timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    app.logger.info(f"{timestamp} GET Request to delete an Account")
+
+    ac = Account.find(id) 
+    if not ac:
+        return (jsonify({'error': 'id not found'}), status.HTTP_404_NOT_FOUND)
+
+    ac.delete()
+
+    return (
+        {}, status.HTTP_204_NO_CONTENT
+    )        
+
 
 
 ######################################################################
