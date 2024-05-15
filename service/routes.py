@@ -118,7 +118,7 @@ def update_account(id):
     try:
         ac.deserialize(request.get_json())
     except Exception as e:
-        return (jsonify({'error': 'attribute error','details':e}), status.HTTP_409_CONFLICT)
+        return (jsonify({'error': 'attribute error', 'details': e}), status.HTTP_409_CONFLICT)
 
     ac.update()
 
