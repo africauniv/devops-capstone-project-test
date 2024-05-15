@@ -58,6 +58,7 @@ def create_accounts():
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
 
+
 ######################################################################
 # LIST ALL ACCOUNTS
 ######################################################################
@@ -96,6 +97,7 @@ def read_account(id):
     else:
         return (jsonify({'error': 'account not found'}), status.HTTP_404_NOT_FOUND)
 
+
 ######################################################################
 # UPDATE AN EXISTING ACCOUNT
 ######################################################################
@@ -115,14 +117,14 @@ def update_account(id):
 
     try:
         ac.deserialize(request.get_json())
-    except:
-        return (jsonify({'error': 'attribute error'}), status.HTTP_409_CONFLICT)
+    except Exception as e:
+        return (jsonify({'error': 'attribute error','details':e}), status.HTTP_409_CONFLICT)
 
     ac.update()
 
     return (
-        jsonify(ac.serialize()), status.HTTP_200_OK, 
-    )        
+        jsonify(ac.serialize()), status.HTTP_200_OK,
+    )
 
 
 ######################################################################
@@ -136,7 +138,7 @@ def delete_account(id):
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     app.logger.info(f"{timestamp} GET Request to delete an Account")
 
-    ac = Account.find(id) 
+    ac = Account.find(id)
     if not ac:
         return (jsonify({'error': 'id not found'}), status.HTTP_404_NOT_FOUND)
 
@@ -144,8 +146,7 @@ def delete_account(id):
 
     return (
         {}, status.HTTP_204_NO_CONTENT
-    )        
-
+    )
 
 
 ######################################################################
