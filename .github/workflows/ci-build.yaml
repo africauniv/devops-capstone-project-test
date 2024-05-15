@@ -17,9 +17,9 @@ jobs:
         image: postgres:alpine
         ports: 
           - 5432:5432 
-      env:
-        POSTGRES_PASSWORD : "pgs3cr3t" 
-        POSTGRES_DB : "testdb"
+        env:
+          POSTGRES_PASSWORD : "pgs3cr3t" 
+          POSTGRES_DB : "testdb"
       options: >-
         --health-cmd pg_isready
         --health-interval 10s
