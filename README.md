@@ -1,4 +1,4 @@
-CI result test tag
+# CI result test tag
 
 ![Build Status](https://github.com/africauniv/devops-capstone-project/actions/workflows/ci-build.yaml/badge.svg)
 
