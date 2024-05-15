@@ -226,3 +226,8 @@ class TestAccountService(TestCase):
         self.assertEqual('nosniff',result["X-Content-Type-Options"])
         self.assertEqual('default-src \'self\'; object-src \'none\'',result["Content-Security-Policy"])
         self.assertEqual('strict-origin-when-cross-origin',result["Referrer-Policy"])
+
+    def test_check_allow_route_protection(self):
+        response = self.client.get(BASE_URL,environ_overrides=HTTPS_ENVIRON)
+        result = response.headers
+        self.assertEqual('*',result["Access-Control-Allow-Origin"])
