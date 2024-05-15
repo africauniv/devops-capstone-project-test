@@ -5,6 +5,7 @@ Test cases can be run with the following:
   nosetests -v --with-spec --spec-color
   coverage report -m
 """
+from service import talisman
 import os
 import logging
 import json
@@ -18,6 +19,7 @@ DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
 )
 
+HTTPS_ENVIRON = {'wsgi.url_scheme': 'https'}
 BASE_URL = "/accounts"
 
 
@@ -35,6 +37,7 @@ class TestAccountService(TestCase):
         app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
         app.logger.setLevel(logging.CRITICAL)
         init_db(app)
+        talisman.force_https = False
 
     @classmethod
     def tearDownClass(cls):
@@ -215,3 +218,11 @@ class TestAccountService(TestCase):
         """it should try to delete by false id"""
         response = self.client.delete(f"{BASE_URL}/22")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_check_https_security(self):
+        response = self.client.get(BASE_URL,environ_overrides=HTTPS_ENVIRON)
+        result = response.headers
+        self.assertEqual('SAMEORIGIN',result["X-Frame-Options"])
+        self.assertEqual('nosniff',result["X-Content-Type-Options"])
+        self.assertEqual('default-src \'self\'; object-src \'none\'',result["Content-Security-Policy"])
+        self.assertEqual('strict-origin-when-cross-origin',result["Referrer-Policy"])
