@@ -71,7 +71,7 @@ spec:
   steps:
     - name: nosetests
       image: python:3.9-slim
-      workingDir: $(workspaces.source.path)/service
+      workingDir: $(workspaces.source.path)
       env:
         - name: DATABASE_URI
           value: $(params.database_uri)
@@ -83,4 +83,4 @@ spec:
         set -e
         python -m pip install --upgrade pip wheel
         pip install -qr requirements.txt
-        nosetests -v --with-spec --spec-color
+        nosetests -v --with-spec --spec-color --cover-package=service
