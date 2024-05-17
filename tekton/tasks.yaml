@@ -50,3 +50,37 @@ spec:
           rm -rf "${WORKSPACE_SOURCE_PATH}"/..?*
         fi
 
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: nose
+spec:
+  description: This task will run nosetests on the provided input.
+  workspaces:
+    - name: source
+  params:
+    - name: args
+      description: argument specifications options
+      type: string
+      default: "-v" 
+    - name: database_uri
+      description: argument specifications options
+      type: string
+      default: "sqlite:///test.db" 
+  steps:
+    - name: nosetests
+      image: python:3.9-slim
+      workingDir: $(workspaces.source.path)/service
+      env:
+        - name: DATABASE_URI
+          value: $(params.database_uri)
+      securityContext:
+        runAsNonRoot: false
+        runAsUser: 0
+      script: |
+        #!/bin/bash
+        set -e
+        python -m pip install --upgrade pip wheel
+        pip install -qr requirements.txt
+        nosetests -v --with-spec --spec-color
