@@ -78,3 +78,17 @@ spec:
       runAfter:
         - lint
         - tests
+    - name: deploy
+      workspaces:
+        - name: manifest-dir
+          workspace: pipeline-workspace          
+      taskRef:
+        name: openshift-client
+        kind: ClusterTask
+      params:
+
+
+        - name: args
+          value: "-v --with-spec --spec-color"
+      runAfter:
+        - build
