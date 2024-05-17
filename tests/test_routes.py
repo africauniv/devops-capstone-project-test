@@ -127,10 +127,10 @@ class TestAccountService(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
-
     ######################################################################
     #  A C C O U N T   T E S T   C A S E S S U P P L E M E N T S
     ######################################################################
+
     def test_read_account(self):
         """it should return an element by its id """
         ac = AccountFactory()
@@ -163,7 +163,7 @@ class TestAccountService(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(ac_initials), len(ac_finals))
         for i in range(3):
-            result = any(ac_finals[i] == item.serialize()  for item in ac_initials)
+            result = any(ac_finals[i] == item.serialize() for item in ac_initials)
             self.assertTrue(result)
 
     def test_read_list_not_found(self):
